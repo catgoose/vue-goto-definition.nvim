@@ -1,0 +1,1 @@
+# vue-goto-component
