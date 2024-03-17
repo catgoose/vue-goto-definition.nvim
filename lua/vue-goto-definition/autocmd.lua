@@ -50,8 +50,8 @@ end
 
 Autocmd.setup = function()
 	local group = vim.api.nvim_create_augroup("VueGotoDefinition", { clear = true })
-	vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
-		pattern = { "*.vue" },
+	vim.api.nvim_create_autocmd({ "FileType" }, {
+		pattern = config.get_opts().filetypes,
 		group = group,
 		callback = function()
 			local on_list = {

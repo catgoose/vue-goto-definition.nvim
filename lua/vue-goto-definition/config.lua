@@ -3,6 +3,7 @@ Config = {}
 local _opts = {
 	auto_imports = true,
 	components = true,
+	filetypes = { "vue" },
 	enabled = function()
 		return vim.fn.filereadable("vite.config.ts") == 1
 	end,
