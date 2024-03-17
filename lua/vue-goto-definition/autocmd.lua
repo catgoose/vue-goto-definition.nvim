@@ -41,6 +41,7 @@ local function open_location_list(list)
 	if #filtered > 0 then
 		if #filtered == 1 then
 			vim.cmd.edit(filtered[1].filename)
+			vim.api.nvim_win_set_cursor(0, { filtered[1].lnum, filtered[1].col - 1 })
 		else
 			vim.fn.setloclist(0, filtered)
 			vim.cmd.lopen()
