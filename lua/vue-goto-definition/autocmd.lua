@@ -10,10 +10,10 @@ local patterns = {
 	import = "import%('(.-)'%)",
 }
 
-local function get_import(list)
+local function get_import_path(list)
 	local opts = config.get_opts()
 	for _, item in ipairs(list.items) do
-		local import = string.match(item.text, "import%('(.-)'%)")
+		local import = string.match(item.text, patterns.import)
 		if import and string.match(import, "^%./") then
 			if opts.auto_imports and item.filename:match(patterns.auto_imports) then
 				if not string.match(import, "%.ts$") then
@@ -32,8 +32,7 @@ local function filter_location_list(list)
 	return vim.tbl_filter(function(item)
 		local is_auto_import = opts.auto_imports and item.filename:match(patterns.auto_imports)
 		local is_component = opts.components and item.filename:match(patterns.components)
-		local import_matches = string.match(item.text, patterns.import)
-		return is_auto_import and not import_matches or is_component and import_matches or true
+		return not is_auto_import and not is_component
 	end, list.items or {})
 end
 
@@ -60,9 +59,9 @@ Autocmd.setup = function()
 					if not list or not list.items or #list.items == 0 then
 						return
 					end
-					local found_import = get_import(list)
-					if found_import then
-						vim.cmd.edit(found_import)
+					local found_import_path = get_import_path(list)
+					if found_import_path then
+						vim.cmd.edit(found_import_path)
 					else
 						open_location_list(list)
 					end
