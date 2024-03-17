@@ -3,6 +3,9 @@ Config = {}
 local _opts = {
 	auto_imports = true,
 	components = true,
+	enabled = function()
+		return vim.fn.filereadable("vite.config.ts") == 1
+	end,
 }
 
 Config.init = function(opts)
