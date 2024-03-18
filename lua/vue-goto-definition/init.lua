@@ -5,10 +5,13 @@ GotoDefinition = {}
 
 function GotoDefinition.setup(opts)
 	opts = opts or {}
-	local _opts = config.init(opts)
-	if type(_opts.enabled) == "function" and _opts.enabled() or type(_opts.enabled) == "boolean" and _opts.enabled then
-		autocmd.setup()
+	config.set_opts(opts)
+	local framework = config.get_framework()
+	local patterns = config.get_patterns()[framework]
+	if not framework or not patterns then
+		return
 	end
+	autocmd.setup(framework, patterns)
 end
 
 return GotoDefinition
