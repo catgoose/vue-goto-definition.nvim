@@ -1,53 +1,11 @@
 local config = require("vue-goto-definition.config")
+local import = require("vue-goto-definition.import")
 
 Autocmd = {}
 
 local lsp_definition = vim.lsp.buf.definition
--- set default values to avoid checking for nil everywhere
-local framework = config.get_framework() or nil
-local patterns = config.get_patterns()[framework] or nil
 
-local function handle_vue3_imports(opts, item, import)
-	if opts.auto_imports and item.filename:match(patterns.auto_imports) then
-		if not string.match(import, "%.ts$") then
-			return import .. ".ts"
-		end
-	elseif opts.components and item.filename:match(patterns.components) then
-		return import
-	end
-	return nil
-end
-
-local function handle_nuxt_imports(opts, item, import)
-	if opts.components and item.filename:match(patterns.components) then
-		return import:gsub(patterns.import_prefix, "")
-	end
-	return nil
-end
-
-local function handle_imports()
-	return framework == "vue3" and handle_vue3_imports
-		or framework == "nuxt" and handle_nuxt_imports
-		or function(...)
-			error(string.format("Unknown framework: %s, args: %s", framework, vim.inspect(...)))
-		end
-end
-
-local function get_import_path(list)
-	local opts = config.get_opts()
-	for _, item in ipairs(list.items) do
-		local import = string.match(item.text, patterns.import)
-		if import and string.match(import, patterns.import_prefix) then
-			local import_path = handle_imports()(opts, item, import)
-			if import_path then
-				return import_path
-			end
-		end
-	end
-	return nil
-end
-
-local function filter_location_list(list)
+local function filter_location_list(list, patterns)
 	local opts = config.get_opts()
 	return vim.tbl_filter(function(item)
 		local is_auto_import = opts.auto_imports and item.filename:match(patterns.auto_imports)
@@ -56,8 +14,8 @@ local function filter_location_list(list)
 	end, list.items or {})
 end
 
-local function open_location_list(list)
-	local filtered = filter_location_list(list)
+local function open_location_list(list, patterns)
+	local filtered = filter_location_list(list, patterns)
 	if #filtered > 0 then
 		if #filtered == 1 then
 			vim.cmd.edit(filtered[1].filename)
@@ -69,13 +27,9 @@ local function open_location_list(list)
 	end
 end
 
-Autocmd.setup = function()
-	if not framework or not patterns then
-		return
-	end
-	-- setting here again to avoid checking for nil everywhere
-	framework = config.get_framework()
-	patterns = config.get_patterns()[framework]
+--  BUG: 2024-03-17 - goto definition for vue framework in a .vue file on an
+--  imported file like a pinia store does not work
+Autocmd.setup = function(framework, patterns)
 	local group = vim.api.nvim_create_augroup("VueGotoDefinition", { clear = true })
 	vim.api.nvim_create_autocmd({ "FileType" }, {
 		pattern = config.get_opts().filetypes,
@@ -86,11 +40,11 @@ Autocmd.setup = function()
 					if not list or not list.items or #list.items == 0 then
 						return
 					end
-					local found_import_path = get_import_path(list)
+					local found_import_path = import.get_import_path(list, patterns, framework)
 					if found_import_path then
 						vim.cmd.edit(found_import_path)
 					else
-						open_location_list(list)
+						open_location_list(list, patterns)
 					end
 				end,
 			}

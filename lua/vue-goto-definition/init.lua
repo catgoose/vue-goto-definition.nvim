@@ -6,7 +6,12 @@ GotoDefinition = {}
 function GotoDefinition.setup(opts)
 	opts = opts or {}
 	config.set_opts(opts)
-	autocmd.setup()
+	local framework = config.get_framework()
+	local patterns = config.get_patterns()[framework]
+	if not framework or not patterns then
+		return
+	end
+	autocmd.setup(framework, patterns)
 end
 
 return GotoDefinition
