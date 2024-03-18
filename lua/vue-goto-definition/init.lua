@@ -6,10 +6,7 @@ GotoDefinition = {}
 function GotoDefinition.setup(opts)
 	opts = opts or {}
 	config.set_opts(opts)
-	local framework = config.get_framework()
-	if framework then
-		autocmd.setup(framework)
-	end
+	autocmd.setup()
 end
 
 return GotoDefinition

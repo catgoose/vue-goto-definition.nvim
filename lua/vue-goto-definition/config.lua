@@ -15,7 +15,7 @@ local _opts = {
 	},
 }
 
-local framework = nil
+local framework = _opts.detection.priority[1]
 
 local import = [[import%(['|"](.-)['|"]%)]]
 local patterns = {
