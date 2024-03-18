@@ -17,7 +17,7 @@ end
 
 local function handle_nuxt_imports(opts, item, patterns, import)
 	if opts.components and item.filename:match(patterns.components) then
-		return import:gsub("%.%./", "")
+		return import:gsub(patterns.import_prefix, "")
 	end
 	return nil
 end
@@ -33,13 +33,11 @@ local function handle_imports(opts, item, patterns, import, framework)
 end
 
 local function get_import_path(list, patterns, framework)
-	vim.print(list)
 	local opts = config.get_opts()
 	for _, item in ipairs(list.items) do
 		local import = string.match(item.text, patterns.import)
 		if import and string.match(import, patterns.import_prefix) then
 			local import_path = handle_imports(opts, item, patterns, import, framework)
-			vim.print(import_path)
 			if import_path then
 				return import_path
 			end
