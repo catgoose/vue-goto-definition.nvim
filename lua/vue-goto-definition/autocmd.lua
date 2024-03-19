@@ -11,7 +11,8 @@ local function filter_location_list(list, patterns)
 	return vim.tbl_filter(function(item)
 		local is_auto_import = opts.auto_imports and item.filename:match(patterns.auto_imports)
 		local is_component = opts.components and item.filename:match(patterns.components)
-		return not is_auto_import and not is_component
+		local is_same_file = item.filename == vim.fn.expand("%:p")
+		return not is_auto_import and not is_component and not is_same_file
 	end, list.items or {})
 end
 
@@ -28,8 +29,8 @@ local function open_location_list(list, patterns)
 	end
 end
 
---  BUG: 2024-03-17 - goto definition for vue framework in a .vue file on an
---  imported file like a pinia store does not work
+local _list = { items = {} }
+
 Autocmd.setup = function(framework, patterns)
 	local group = vim.api.nvim_create_augroup("VueGotoDefinition", { clear = true })
 	vim.api.nvim_create_autocmd({ "FileType" }, {
@@ -38,28 +39,26 @@ Autocmd.setup = function(framework, patterns)
 		callback = function()
 			local on_list = {
 				on_list = function(list)
-					if not list or not list.items or #list.items == 0 then
+					if not list or not list.items or #list.items == 0 or not utils.vue_tsserver_plugin_loaded() then
 						return
 					end
-					local found_import_path = import.get_import_path(list, patterns, framework)
-					if found_import_path then
-						vim.cmd.edit(found_import_path)
-					else
-						open_location_list(list, patterns)
-					end
-
-					-- wip
-					local loclist = vim.fn.getloclist(0)
-					if loclist and #loclist > 0 then
-						vim.fn.setloclist(0, list.items)
-					else
-						vim.tbl_extend("keep", list.items, loclist)
-						vim.cmd.lopen()
-					end
+					vim.list_extend(_list.items, list.items)
+					vim.defer_fn(function()
+						if not _list.items or #_list.items == 0 then
+							return
+						end
+						local found_import_path = import.get_import_path(_list, patterns, framework)
+						if found_import_path then
+							vim.cmd.edit(found_import_path)
+						else
+							open_location_list(_list, patterns)
+						end
+					end, 100)
 				end,
 			}
 			---@diagnostic disable-next-line: duplicate-set-field
 			vim.lsp.buf.definition = function(opts)
+				_list.items = {}
 				opts = opts or {}
 				opts = vim.tbl_extend("keep", opts, on_list)
 				lsp_definition(opts)

@@ -17,7 +17,7 @@ function Utils.vue_tsserver_plugin_loaded()
 		and clients[1].config.init_options
 		and clients[1].config.init_options.plugins
 	then
-		for _, plugin in clients[1].config.init_options.plugins do
+		for _, plugin in ipairs(clients[1].config.init_options.plugins) do
 			if plugin.name == "@vue/typescript-plugin" then
 				found = true
 				break
