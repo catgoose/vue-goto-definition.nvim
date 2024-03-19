@@ -1,5 +1,6 @@
 local config = require("vue-goto-definition.config")
 local import = require("vue-goto-definition.import")
+local utils = require("vue-goto-definition.utils")
 
 Autocmd = {}
 
@@ -45,6 +46,15 @@ Autocmd.setup = function(framework, patterns)
 						vim.cmd.edit(found_import_path)
 					else
 						open_location_list(list, patterns)
+					end
+
+					-- wip
+					local loclist = vim.fn.getloclist(0)
+					if loclist and #loclist > 0 then
+						vim.fn.setloclist(0, list.items)
+					else
+						vim.tbl_extend("keep", list.items, loclist)
+						vim.cmd.lopen()
 					end
 				end,
 			}
