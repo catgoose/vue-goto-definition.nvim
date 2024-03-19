@@ -1,3 +1,5 @@
+local utils = require("vue-goto-definition.utils")
+
 Config = {}
 
 local _opts = {
@@ -6,10 +8,10 @@ local _opts = {
 	filetypes = { "vue" },
 	detection = {
 		nuxt = function()
-			return vim.fn.glob(".nuxt/") ~= ""
+			return utils.is_nuxt()
 		end,
 		vue3 = function()
-			return vim.fn.filereadable("vite.config.ts") == 1
+			return utils.is_vue3()
 		end,
 		priority = { "nuxt", "vue3" },
 	},
