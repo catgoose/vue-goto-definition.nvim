@@ -1,4 +1,4 @@
-Utils = {}
+local Utils = {}
 
 function Utils.is_nuxt()
 	return vim.fn.glob(".nuxt/") ~= ""

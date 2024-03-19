@@ -1,7 +1,7 @@
 local config = require("vue-goto-definition.config")
 local autocmd = require("vue-goto-definition.autocmd")
 
-GotoDefinition = {}
+local GotoDefinition = {}
 
 function GotoDefinition.setup(opts)
 	opts = opts or {}

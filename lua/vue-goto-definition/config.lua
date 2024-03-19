@@ -1,6 +1,6 @@
 local utils = require("vue-goto-definition.utils")
 
-Config = {}
+local Config = {}
 
 local _opts = {
 	auto_imports = true,

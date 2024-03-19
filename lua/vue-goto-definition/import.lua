@@ -1,6 +1,6 @@
 local config = require("vue-goto-definition.config")
 
-Import = {}
+local Import = {}
 
 local function handle_vue3_imports(opts, item, import, patterns)
 	if opts.auto_imports and item.filename:match(patterns.auto_imports) then

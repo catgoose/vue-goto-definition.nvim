@@ -2,7 +2,7 @@ local config = require("vue-goto-definition.config")
 local import = require("vue-goto-definition.import")
 local utils = require("vue-goto-definition.utils")
 
-Autocmd = {}
+local Autocmd = {}
 
 local lsp_definition = vim.lsp.buf.definition
 
