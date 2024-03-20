@@ -3,8 +3,11 @@ local utils = require("vue-goto-definition.utils")
 local Config = {}
 
 local _opts = {
-	auto_imports = true,
-	components = true,
+	filter = {
+		auto_imports = true,
+		auto_components = true,
+		same_file = true,
+	},
 	filetypes = { "vue" },
 	detection = {
 		nuxt = function()
@@ -15,6 +18,7 @@ local _opts = {
 		end,
 		priority = { "nuxt", "vue3" },
 	},
+	defer = 250,
 }
 
 local framework = _opts.detection.priority[1]
