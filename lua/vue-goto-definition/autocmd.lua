@@ -25,8 +25,8 @@ function M.setup(framework, patterns)
 						if #_items == 0 then
 							return
 						end
-						--  BUG: 2024-03-20 - get_path is not getting import for auto
-						--  imported store
+						--  BUG: 2024-03-20 - Path is not resolved when calling definition
+						--  on auto imported pinia store
 						local path = import.get_path(_items, patterns, framework)
 						if path then
 							vim.cmd.edit(path)
