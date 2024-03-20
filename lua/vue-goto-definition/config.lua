@@ -9,7 +9,7 @@ local _opts = {
 		same_file = true,
 		declaration = true,
 	},
-	filetypes = { "vue" },
+	filetypes = { "vue", "typescript" },
 	detection = {
 		nuxt = function()
 			return utils.is_nuxt()

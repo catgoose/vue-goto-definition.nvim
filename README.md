@@ -45,7 +45,7 @@ symbol so you don't have to make multiple jumps to goto the definition.
     declaration = true, -- filter declaration files unless the only location list
     -- item is a declaration file
   },
-  filetypes = { "vue" }, -- enabled for filetypes
+  filetypes = { "vue", "typescript" }, -- enabled for filetypes
   detection = { -- framework detection.  Detection functions can be overridden here
     nuxt = function() -- look for .nuxt directory
       return vim.fn.glob(".nuxt/") ~= ""
@@ -87,7 +87,7 @@ local opts = {
     same_file = true,
     declaration = true,
   },
-  filetypes = { "vue" },
+  filetypes = { "vue", "typescript" },
   detection = {
     nuxt = function()
       return vim.fn.glob(".nuxt/") ~= ""
@@ -155,6 +155,8 @@ This is how I have configured `tsserver` and `@vue/typescript-plugin`: [nvim con
         name = "@vue/typescript-plugin",
         location = "node_modules/@vue/typescript-plugin",
         languages = {
+          "typescript",
+          "javascript",
           "vue",
         },
       },
