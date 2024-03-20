@@ -7,6 +7,7 @@ local _opts = {
 		auto_imports = true,
 		auto_components = true,
 		same_file = true,
+		declaration = true,
 	},
 	filetypes = { "vue" },
 	detection = {
@@ -23,25 +24,33 @@ local _opts = {
 
 local framework = _opts.detection.priority[1]
 
-local import = [[import%(['|"](.-)['|"]%)]]
+local common = {
+	import = [[import%(['|"](.-)['|"]%)]],
+	declaration = ".*%.d%.ts$",
+}
 local patterns = {
 	vue3 = {
 		auto_imports = ".*/auto%-imports%.d%.ts$",
 		components = ".*/components%.d%.ts$",
-		import = import,
 		import_prefix = "^%./",
 	},
 	nuxt = {
 		auto_imports = ".*/%.nuxt/types/imports%.d%.ts$",
 		components = ".*/%.nuxt/components%.d%.ts$",
-		import = import,
 		import_prefix = "^%.%./",
 	},
 }
+for i, _ in pairs(common) do
+	for j, _ in pairs(patterns) do
+		patterns[j][i] = common[i]
+	end
+end
 
 M.set_opts = function(opts)
 	opts = opts or {}
 	_opts = vim.tbl_deep_extend("keep", opts, _opts)
+	_opts.filter = vim.tbl_deep_extend("keep", opts.filter or {}, _opts.filter)
+	_opts.detection = vim.tbl_deep_extend("keep", opts.detection or {}, _opts.detection)
 	for _, detection in ipairs(_opts.detection.priority) do
 		if _opts.detection[detection]() then
 			framework = detection

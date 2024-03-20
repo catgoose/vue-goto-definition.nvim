@@ -4,12 +4,19 @@ local M = {}
 
 function M.get_filtered_items(list, patterns)
 	local filter = config.get_opts().filter
-	return vim.tbl_filter(function(item)
+	local items = vim.tbl_filter(function(item)
 		local is_auto_import = filter.auto_imports and item.filename:match(patterns.auto_imports)
 		local is_component = filter.components and item.filename:match(patterns.components)
 		local is_same_file = filter.same_file and item.filename == vim.fn.expand("%:p")
 		return not is_auto_import and not is_component and not is_same_file
 	end, list.items or {})
+	if #items < 2 then
+		return items
+	end
+	return vim.tbl_filter(function(item)
+		local is_declaration = filter.declaration and item.filename:match(patterns.declaration)
+		return not is_declaration
+	end, items)
 end
 
 function M.open(items)
