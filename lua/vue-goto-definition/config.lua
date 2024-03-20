@@ -1,60 +1,75 @@
-Config = {}
+local utils = require("vue-goto-definition.utils")
+
+local M = {}
 
 local _opts = {
-	auto_imports = true,
-	components = true,
+	filter = {
+		auto_imports = true,
+		auto_components = true,
+		same_file = true,
+		declaration = true,
+	},
 	filetypes = { "vue" },
 	detection = {
 		nuxt = function()
-			return vim.fn.glob(".nuxt/") ~= ""
+			return utils.is_nuxt()
 		end,
 		vue3 = function()
-			return vim.fn.filereadable("vite.config.ts") == 1
+			return utils.is_vue3()
 		end,
 		priority = { "nuxt", "vue3" },
 	},
+	defer = 100,
 }
 
 local framework = _opts.detection.priority[1]
 
-local import = [[import%(['|"](.-)['|"]%)]]
+local common = {
+	import = [[import%(['|"](.-)['|"]%)]],
+	declaration = ".*%.d%.ts$",
+}
 local patterns = {
 	vue3 = {
 		auto_imports = ".*/auto%-imports%.d%.ts$",
 		components = ".*/components%.d%.ts$",
-		import = import,
 		import_prefix = "^%./",
 	},
 	nuxt = {
 		auto_imports = ".*/%.nuxt/types/imports%.d%.ts$",
 		components = ".*/%.nuxt/components%.d%.ts$",
-		import = import,
 		import_prefix = "^%.%./",
 	},
 }
+for i, _ in pairs(common) do
+	for j, _ in pairs(patterns) do
+		patterns[j][i] = common[i]
+	end
+end
 
-Config.set_opts = function(opts)
+M.set_opts = function(opts)
 	opts = opts or {}
 	_opts = vim.tbl_deep_extend("keep", opts, _opts)
+	_opts.filter = vim.tbl_deep_extend("keep", opts.filter or {}, _opts.filter)
+	_opts.detection = vim.tbl_deep_extend("keep", opts.detection or {}, _opts.detection)
 	for _, detection in ipairs(_opts.detection.priority) do
 		if _opts.detection[detection]() then
 			framework = detection
 			break
 		end
 	end
-	return Config.get_opts()
+	return M.get_opts()
 end
 
-Config.get_opts = function()
+M.get_opts = function()
 	return _opts
 end
 
-Config.get_framework = function()
+M.get_framework = function()
 	return framework
 end
 
-Config.get_patterns = function()
+M.get_patterns = function()
 	return patterns
 end
 
-return Config
+return M
