@@ -1,14 +1,14 @@
-local Utils = {}
+local M = {}
 
-function Utils.is_nuxt()
+function M.is_nuxt()
 	return vim.fn.glob(".nuxt/") ~= ""
 end
 
-function Utils.is_vue3()
+function M.is_vue3()
 	return vim.fn.filereadable("vite.config.ts") == 1
 end
 
-function Utils.vue_tsserver_plugin_loaded()
+function M.vue_tsserver_plugin_loaded()
 	local found = false
 	local clients = vim.lsp.get_clients({ name = "tsserver" })
 	if
@@ -27,4 +27,4 @@ function Utils.vue_tsserver_plugin_loaded()
 	return found
 end
 
-return Utils
+return M

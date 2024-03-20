@@ -1,6 +1,6 @@
 local config = require("vue-goto-definition.config")
 
-local Import = {}
+local M = {}
 
 local function handle_vue3_imports(opts, item, import, patterns)
 	if opts.auto_imports and item.filename:match(patterns.auto_imports) then
@@ -28,7 +28,7 @@ local function get_framework_import_func(framework)
 		end
 end
 
-Import.get_import_path = function(items, patterns, framework)
+M.get_import_path = function(items, patterns, framework)
 	local opts = config.get_opts()
 	for _, item in ipairs(items) do
 		local import = string.match(item.text, patterns.import)
@@ -42,4 +42,4 @@ Import.get_import_path = function(items, patterns, framework)
 	return nil
 end
 
-return Import
+return M

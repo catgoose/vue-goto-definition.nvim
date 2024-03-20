@@ -1,6 +1,6 @@
 local utils = require("vue-goto-definition.utils")
 
-local Config = {}
+local M = {}
 
 local _opts = {
 	filter = {
@@ -39,7 +39,7 @@ local patterns = {
 	},
 }
 
-Config.set_opts = function(opts)
+M.set_opts = function(opts)
 	opts = opts or {}
 	_opts = vim.tbl_deep_extend("keep", opts, _opts)
 	for _, detection in ipairs(_opts.detection.priority) do
@@ -48,19 +48,19 @@ Config.set_opts = function(opts)
 			break
 		end
 	end
-	return Config.get_opts()
+	return M.get_opts()
 end
 
-Config.get_opts = function()
+M.get_opts = function()
 	return _opts
 end
 
-Config.get_framework = function()
+M.get_framework = function()
 	return framework
 end
 
-Config.get_patterns = function()
+M.get_patterns = function()
 	return patterns
 end
 
-return Config
+return M

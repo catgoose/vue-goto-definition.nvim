@@ -1,9 +1,9 @@
 local config = require("vue-goto-definition.config")
 local autocmd = require("vue-goto-definition.autocmd")
 
-local GotoDefinition = {}
+local M = {}
 
-function GotoDefinition.setup(opts)
+function M.setup(opts)
 	opts = opts or {}
 	config.set_opts(opts)
 	local framework = config.get_framework()
@@ -14,4 +14,4 @@ function GotoDefinition.setup(opts)
 	autocmd.setup(framework, patterns)
 end
 
-return GotoDefinition
+return M

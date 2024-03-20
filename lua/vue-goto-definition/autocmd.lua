@@ -2,7 +2,7 @@ local config = require("vue-goto-definition.config")
 local import = require("vue-goto-definition.import")
 local utils = require("vue-goto-definition.utils")
 
-local Autocmd = {}
+local M = {}
 
 local lsp_definition = vim.lsp.buf.definition
 
@@ -30,7 +30,7 @@ end
 
 local _items = {}
 
-Autocmd.setup = function(framework, patterns)
+M.setup = function(framework, patterns)
 	local group = vim.api.nvim_create_augroup("VueGotoDefinition", { clear = true })
 	vim.api.nvim_create_autocmd({ "FileType" }, {
 		pattern = config.get_opts().filetypes,
@@ -67,4 +67,4 @@ Autocmd.setup = function(framework, patterns)
 	})
 end
 
-return Autocmd
+return M
