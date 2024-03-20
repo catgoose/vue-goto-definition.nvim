@@ -160,9 +160,9 @@ This is how I have configured `tsserver` and `@vue/typescript-plugin`: [nvim con
       },
     },
       filetypes = {
-      "typescript",
-      "javascript",
-      "vue",
+        "typescript",
+        "javascript",
+        "vue",
       }
   }
 }
