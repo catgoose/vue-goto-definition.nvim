@@ -8,7 +8,7 @@ function M.is_vue3()
 	return vim.fn.filereadable("vite.config.ts") == 1
 end
 
-function M.vue_tsserver_plugin_loaded()
+function M.vue_lsp_loaded()
 	local found = false
 	local clients = vim.lsp.get_clients({ name = "tsserver" })
 	if

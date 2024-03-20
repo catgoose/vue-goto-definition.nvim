@@ -2,7 +2,7 @@ local config = require("vue-goto-definition.config")
 
 local M = {}
 
-function M.filter_location_list(list, patterns)
+function M.get_filtered_items(list, patterns)
 	local filter = config.get_opts().filter
 	return vim.tbl_filter(function(item)
 		local is_auto_import = filter.auto_imports and item.filename:match(patterns.auto_imports)
@@ -12,7 +12,7 @@ function M.filter_location_list(list, patterns)
 	end, list.items or {})
 end
 
-function M.open_location_list(items)
+function M.open(items)
 	if #items > 0 then
 		if #items == 1 then
 			vim.cmd.edit(items[1].filename)

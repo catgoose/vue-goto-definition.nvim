@@ -17,7 +17,7 @@ M.setup = function(framework, patterns)
 		callback = function()
 			local on_list = {
 				on_list = function(list)
-					if not list or not list.items or #list.items == 0 or not utils.vue_tsserver_plugin_loaded() then
+					if not list or not list.items or #list.items == 0 or not utils.vue_lsp_loaded() then
 						return
 					end
 					vim.list_extend(_items, locationlist.get_filtered_items(list, patterns))
@@ -25,9 +25,9 @@ M.setup = function(framework, patterns)
 						if #_items == 0 then
 							return
 						end
-						local found_import_path = import.get_import_path(_items, patterns, framework)
-						if found_import_path then
-							vim.cmd.edit(found_import_path)
+						local path = import.get_path(_items, patterns, framework)
+						if path then
+							vim.cmd.edit(path)
 						else
 							locationlist.open(_items)
 						end

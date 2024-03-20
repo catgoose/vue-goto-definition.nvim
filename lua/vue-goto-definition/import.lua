@@ -28,7 +28,7 @@ local function get_framework_import_func(framework)
 		end
 end
 
-M.get_import_path = function(items, patterns, framework)
+M.get_path = function(items, patterns, framework)
 	local opts = config.get_opts()
 	for _, item in ipairs(items) do
 		local import = string.match(item.text, patterns.import)
