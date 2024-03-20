@@ -9,7 +9,7 @@ local lsp_definition = vim.lsp.buf.definition
 
 local _items = {}
 
-M.setup = function(framework, patterns)
+function M.setup(framework, patterns)
 	local group = vim.api.nvim_create_augroup("VueGotoDefinition", { clear = true })
 	vim.api.nvim_create_autocmd({ "FileType" }, {
 		pattern = config.get_opts().filetypes,
@@ -20,16 +20,18 @@ M.setup = function(framework, patterns)
 					if not list or not list.items or #list.items == 0 or not utils.vue_lsp_loaded() then
 						return
 					end
-					vim.list_extend(_items, locationlist.get_filtered_items(list, patterns))
+					vim.list_extend(_items, list.items)
 					vim.defer_fn(function()
 						if #_items == 0 then
 							return
 						end
+						--  BUG: 2024-03-20 - Path is not resolved when calling definition
+						--  on auto imported pinia store
 						local path = import.get_path(_items, patterns, framework)
 						if path then
 							vim.cmd.edit(path)
 						else
-							locationlist.open(_items)
+							locationlist.open(_items, patterns)
 						end
 					end, config.get_opts().defer)
 				end,

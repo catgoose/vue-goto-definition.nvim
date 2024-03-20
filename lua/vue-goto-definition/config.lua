@@ -46,11 +46,9 @@ for i, _ in pairs(common) do
 	end
 end
 
-M.set_opts = function(opts)
+function M.set_opts(opts)
 	opts = opts or {}
 	_opts = vim.tbl_deep_extend("keep", opts, _opts)
-	_opts.filter = vim.tbl_deep_extend("keep", opts.filter or {}, _opts.filter)
-	_opts.detection = vim.tbl_deep_extend("keep", opts.detection or {}, _opts.detection)
 	for _, detection in ipairs(_opts.detection.priority) do
 		if _opts.detection[detection]() then
 			framework = detection
@@ -60,15 +58,15 @@ M.set_opts = function(opts)
 	return M.get_opts()
 end
 
-M.get_opts = function()
+function M.get_opts()
 	return _opts
 end
 
-M.get_framework = function()
+function M.get_framework()
 	return framework
 end
 
-M.get_patterns = function()
+function M.get_patterns()
 	return patterns
 end
 
