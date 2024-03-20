@@ -18,7 +18,7 @@ local _opts = {
 		end,
 		priority = { "nuxt", "vue3" },
 	},
-	defer = 250,
+	defer = 100,
 }
 
 local framework = _opts.detection.priority[1]

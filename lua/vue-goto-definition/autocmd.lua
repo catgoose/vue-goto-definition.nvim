@@ -7,29 +7,28 @@ local Autocmd = {}
 local lsp_definition = vim.lsp.buf.definition
 
 local function filter_location_list(list, patterns)
-	local opts = config.get_opts()
+	local filter = config.get_opts().filter
 	return vim.tbl_filter(function(item)
-		local is_auto_import = opts.auto_imports and item.filename:match(patterns.auto_imports)
-		local is_component = opts.components and item.filename:match(patterns.components)
-		local is_same_file = item.filename == vim.fn.expand("%:p")
+		local is_auto_import = filter.auto_imports and item.filename:match(patterns.auto_imports)
+		local is_component = filter.components and item.filename:match(patterns.components)
+		local is_same_file = filter.same_file and item.filename == vim.fn.expand("%:p")
 		return not is_auto_import and not is_component and not is_same_file
 	end, list.items or {})
 end
 
-local function open_location_list(list, patterns)
-	local filtered = filter_location_list(list, patterns)
-	if #filtered > 0 then
-		if #filtered == 1 then
-			vim.cmd.edit(filtered[1].filename)
-			vim.api.nvim_win_set_cursor(0, { filtered[1].lnum, filtered[1].col - 1 })
+local function open_location_list(items)
+	if #items > 0 then
+		if #items == 1 then
+			vim.cmd.edit(items[1].filename)
+			vim.api.nvim_win_set_cursor(0, { items[1].lnum, items[1].col - 1 })
 		else
-			vim.fn.setloclist(0, filtered)
+			vim.fn.setloclist(0, items)
 			vim.cmd.lopen()
 		end
 	end
 end
 
-local _list = { items = {} }
+local _items = {}
 
 Autocmd.setup = function(framework, patterns)
 	local group = vim.api.nvim_create_augroup("VueGotoDefinition", { clear = true })
@@ -42,23 +41,24 @@ Autocmd.setup = function(framework, patterns)
 					if not list or not list.items or #list.items == 0 or not utils.vue_tsserver_plugin_loaded() then
 						return
 					end
-					vim.list_extend(_list.items, list.items)
+					local items = filter_location_list(list, patterns)
+					vim.list_extend(_items, items)
 					vim.defer_fn(function()
-						if not _list.items or #_list.items == 0 then
+						if #_items == 0 then
 							return
 						end
-						local found_import_path = import.get_import_path(_list, patterns, framework)
+						local found_import_path = import.get_import_path(_items, patterns, framework)
 						if found_import_path then
 							vim.cmd.edit(found_import_path)
 						else
-							open_location_list(_list, patterns)
+							open_location_list(_items)
 						end
-					end, 100)
+					end, config.get_opts().defer)
 				end,
 			}
 			---@diagnostic disable-next-line: duplicate-set-field
 			vim.lsp.buf.definition = function(opts)
-				_list.items = {}
+				_items = {}
 				opts = opts or {}
 				opts = vim.tbl_extend("keep", opts, on_list)
 				lsp_definition(opts)
