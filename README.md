@@ -7,7 +7,6 @@
   - [Neovim Config](#neovim-config)
     - [Default configuration](#default-configuration)
       - [Filter](#filter)
-      - [Defer](#defer)
       - [Framework detection](#framework-detection)
     - [Lazy.nvim](#lazynvim)
   - [Framework and LSP configuration](#framework-and-lsp-configuration)
@@ -38,7 +37,7 @@ symbol so you don't have to make multiple jumps to goto the definition.
 
 ```lua
 {
-  filter = {
+  filters = {
     auto_imports = true, -- resolve definitions in auto-imports.d.ts
     auto_components = true, -- resolve definitions in components.d.ts
     same_file = true, -- filter location list entries referencing the current file
@@ -54,8 +53,7 @@ symbol so you don't have to make multiple jumps to goto the definition.
       return vim.fn.filereadable("vite.config.ts") == 1
     end,
     priority = { "nuxt", "vue3" }, -- order in which to detect framework
-  },
-  defer = 100, -- time in ms to wait before resolving imports See below for details
+  }
 }
 ```
 
@@ -63,13 +61,6 @@ symbol so you don't have to make multiple jumps to goto the definition.
 
 If after filtering the locationlist items there are multiple items remaining they
 will be populated in a locationlist window.
-
-#### Defer
-
-Using `vim.lsp.buf.defintion` in a `.Vue` file on a symbol that is defined in a
-typescript file will result in both `tsserver` and `@vue/typescript-plugin` being
-called. This plugin attempts to populate a locationlist from each call first before
-resolving the definition
 
 I've opened an issue about this [here](https://github.com/vuejs/language-tools/issues/4112)
 
@@ -81,7 +72,7 @@ I've opened an issue about this [here](https://github.com/vuejs/language-tools/i
 
 ```lua
 local opts = {
-  filter = {
+  filters = {
     auto_imports = true,
     auto_components = true,
     same_file = true,
@@ -93,11 +84,10 @@ local opts = {
       return vim.fn.glob(".nuxt/") ~= ""
     end,
     vue3 = function()
-      return vim.fn.filereadable("vite.config.ts") == 1
+	  return vim.fn.filereadable("vite.config.ts") == 1 or vim.fn.filereadable("src/App.vue") == 1
     end,
     priority = { "nuxt", "vue3" },
-  },
-  defer = 100
+  }
 }
 
 return {

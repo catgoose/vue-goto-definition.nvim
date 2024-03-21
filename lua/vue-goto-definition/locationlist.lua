@@ -1,26 +1,23 @@
-local config = require("vue-goto-definition.config")
-
 local M = {}
 
-local function get_filtered_items(items, patterns)
-	local filter = config.get_opts().filter
+local function get_filtered_items(items, opts)
 	local filtered = vim.tbl_filter(function(item)
-		local is_auto_import = filter.auto_imports and item.filename:match(patterns.auto_imports)
-		local is_component = filter.components and item.filename:match(patterns.components)
-		local is_same_file = filter.same_file and item.filename == vim.fn.expand("%:p")
+		local is_auto_import = opts.filters.auto_imports and item.filename:match(opts.patterns.auto_imports)
+		local is_component = opts.filters.auto_components and item.filename:match(opts.patterns.auto_components)
+		local is_same_file = opts.filters.same_file and item.filename == vim.fn.expand("%:p")
 		return not is_auto_import and not is_component and not is_same_file
 	end, items or {})
 	if #filtered < 2 then
 		return filtered
 	end
 	return vim.tbl_filter(function(item)
-		local is_declaration = filter.declaration and item.filename:match(patterns.declaration)
+		local is_declaration = opts.filters.declaration and item.filename:match(opts.patterns.declaration)
 		return not is_declaration
 	end, filtered)
 end
 
-function M.open(items, patterns)
-	local filtered = get_filtered_items(items, patterns)
+function M.open(items, opts)
+	local filtered = get_filtered_items(items, opts)
 	if #filtered > 0 then
 		if #filtered == 1 then
 			vim.cmd.edit(filtered[1].filename)
