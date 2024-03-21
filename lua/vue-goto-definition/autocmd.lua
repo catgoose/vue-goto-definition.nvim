@@ -18,10 +18,10 @@ function M.setup()
 				end,
 			}
 			---@diagnostic disable-next-line: duplicate-set-field
-			vim.lsp.buf.definition = function(opts)
-				opts = opts or {}
-				opts = vim.tbl_extend("keep", opts, on_list)
-				lsp_definition(opts)
+			vim.lsp.buf.definition = function(_opts)
+				_opts = _opts or {}
+				_opts = vim.tbl_extend("keep", _opts, on_list)
+				lsp_definition(_opts)
 			end
 		end,
 	})

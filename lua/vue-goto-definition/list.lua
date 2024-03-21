@@ -1,11 +1,11 @@
 local import = require("vue-goto-definition.import")
 local locationlist = require("vue-goto-definition.locationlist")
-local utils = require("vue-goto-definition.utils")
 
 local M = {}
 
 function M.process(list, opts)
-	if not list or not list.items or #list.items == 0 or not utils.vue_lsp_loaded() then
+	local is_volar = vim.lsp.get_clients({ name = "volar" })[1] ~= nil
+	if not list or not list.items or #list.items == 0 or not is_volar then
 		return
 	end
 	local items = list.items
