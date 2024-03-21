@@ -1,20 +1,19 @@
 # vue-goto-component
 
 <!--toc:start-->
-
 - [vue-goto-component](#vue-goto-component)
   - [About](#about)
   - [Neovim Config](#neovim-config)
     - [Default configuration](#default-configuration)
       - [Filter](#filter)
-      - [Defer](#defer)
       - [Framework detection](#framework-detection)
     - [Lazy.nvim](#lazynvim)
   - [Framework and LSP configuration](#framework-and-lsp-configuration)
     - [Vue 3](#vue-3)
     - [Nuxt](#nuxt)
   - [LSP](#lsp)
-  <!--toc:end-->
+    - [Takeover mode](#takeover-mode)
+<!--toc:end-->
 
 Improves `@vue/typescript-plugin` goto definition functionality
 
@@ -38,24 +37,23 @@ symbol so you don't have to make multiple jumps to goto the definition.
 
 ```lua
 {
-  filter = {
+  filters = {
     auto_imports = true, -- resolve definitions in auto-imports.d.ts
     auto_components = true, -- resolve definitions in components.d.ts
     same_file = true, -- filter location list entries referencing the current file
     declaration = true, -- filter declaration files unless the only location list
     -- item is a declaration file
   },
-  filetypes = { "vue" }, -- enabled for filetypes
+  filetypes = { "vue", "typescript" }, -- enabled for filetypes
   detection = { -- framework detection.  Detection functions can be overridden here
     nuxt = function() -- look for .nuxt directory
       return vim.fn.glob(".nuxt/") ~= ""
     end,
-    vue3 = function() -- look for vite.config.ts
-      return vim.fn.filereadable("vite.config.ts") == 1
+    vue3 = function() -- look for vite.config.ts or App.vue
+      return vim.fn.filereadable("vite.config.ts") == 1 or vim.fn.filereadable("src/App.vue") == 1
     end,
     priority = { "nuxt", "vue3" }, -- order in which to detect framework
-  },
-  defer = 100, -- time in ms to wait before resolving imports See below for details
+  }
 }
 ```
 
@@ -63,15 +61,6 @@ symbol so you don't have to make multiple jumps to goto the definition.
 
 If after filtering the locationlist items there are multiple items remaining they
 will be populated in a locationlist window.
-
-#### Defer
-
-Using `vim.lsp.buf.defintion` in a `.Vue` file on a symbol that is defined in a
-typescript file will result in both `tsserver` and `@vue/typescript-plugin` being
-called. This plugin attempts to populate a locationlist from each call first before
-resolving the definition
-
-I've opened an issue about this [here](https://github.com/vuejs/language-tools/issues/4112)
 
 #### Framework detection
 
@@ -81,23 +70,22 @@ I've opened an issue about this [here](https://github.com/vuejs/language-tools/i
 
 ```lua
 local opts = {
-  filter = {
+  filters = {
     auto_imports = true,
     auto_components = true,
     same_file = true,
     declaration = true,
   },
-  filetypes = { "vue" },
+  filetypes = { "vue", "typescript" },
   detection = {
     nuxt = function()
       return vim.fn.glob(".nuxt/") ~= ""
     end,
     vue3 = function()
-      return vim.fn.filereadable("vite.config.ts") == 1
+      return vim.fn.filereadable("vite.config.ts") == 1 or vim.fn.filereadable("src/App.vue") == 1
     end,
     priority = { "nuxt", "vue3" },
-  },
-  defer = 100
+  }
 }
 
 return {
@@ -142,30 +130,54 @@ resolution is not working.
 
 ## LSP
 
-This is how I have configured `tsserver` and `@vue/typescript-plugin`: [nvim config - lspconfig](https://github.com/catgoose/nvim/blob/main/lua/plugins/lspconfig.lua):
+I would recommend using `volar` with takeover mode because the new hybrid mode
+results in two calls when `vim.lsp.buf.definition` is executed.
 
-```lua
+I've opened an issue about this [here](https://github.com/vuejs/language-tools/issues/4112)
+
+### Takeover mode
+
+I use neoconf to enable takeover mode
+
+Create a `.neoconf.json` in project root, something like:
+
+```json
 {
-  tsserver = {
-    capabilities = capabilities,
-    on_attach = rename_on_attach,
-    init_options = {
-    plugins = {
-      {
-        name = "@vue/typescript-plugin",
-        location = "node_modules/@vue/typescript-plugin",
-        languages = {
-          "vue",
-        },
+  "lsp": {
+    "servers": {
+      "volar": {
+        "disable": false
       },
-    },
-      filetypes = {
-        "typescript",
-        "javascript",
-        "vue",
+      "tsserver": {
+        "disable": true
+      },
+      "angularls": {
+        "disable": true
       }
+    }
   }
 }
 ```
 
-Make sure you have installed `@vue/typescript-plugin`
+Create a `neoconf.json` in nvim config directory:
+
+```json
+{
+  "lsp": {
+    "servers": {
+      "volar": {
+        "disable": true
+      }
+    }
+  }
+}
+```
+
+Use a function like this in your lspconfig to disable lsp servers per project
+
+```lua
+local server_enabled = function(server)
+  return not require("neoconf").get("lsp.servers." .. server .. ".disable")
+end
+
+```

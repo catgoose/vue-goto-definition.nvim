@@ -3,13 +3,13 @@ local utils = require("vue-goto-definition.utils")
 local M = {}
 
 local _opts = {
-	filter = {
+	filters = {
 		auto_imports = true,
 		auto_components = true,
 		same_file = true,
 		declaration = true,
 	},
-	filetypes = { "vue" },
+	filetypes = { "vue", "typescript" },
 	detection = {
 		nuxt = function()
 			return utils.is_nuxt()
@@ -19,7 +19,6 @@ local _opts = {
 		end,
 		priority = { "nuxt", "vue3" },
 	},
-	defer = 100,
 }
 
 local framework = _opts.detection.priority[1]
@@ -31,12 +30,12 @@ local common = {
 local patterns = {
 	vue3 = {
 		auto_imports = ".*/auto%-imports%.d%.ts$",
-		components = ".*/components%.d%.ts$",
+		auto_components = ".*/components%.d%.ts$",
 		import_prefix = "^%./",
 	},
 	nuxt = {
 		auto_imports = ".*/%.nuxt/types/imports%.d%.ts$",
-		components = ".*/%.nuxt/components%.d%.ts$",
+		auto_components = ".*/%.nuxt/components%.d%.ts$",
 		import_prefix = "^%.%./",
 	},
 }
@@ -59,15 +58,12 @@ function M.set_opts(opts)
 end
 
 function M.get_opts()
-	return _opts
-end
-
-function M.get_framework()
-	return framework
-end
-
-function M.get_patterns()
-	return patterns
+	return {
+		framework = framework,
+		patterns = patterns[framework],
+		filters = _opts.filters,
+		filetypes = _opts.filetypes,
+	}
 end
 
 return M

@@ -1,23 +1,21 @@
-local config = require("vue-goto-definition.config")
-
 local M = {}
 
-local function handle_vue3_imports(opts, item, import, patterns)
-	if opts.auto_imports and item.filename:match(patterns.auto_imports) then
+local function handle_vue3_imports(item, import, opts)
+	if opts.filters.auto_imports and item.filename:match(opts.patterns.auto_imports) then
 		if not string.match(import, "%.ts$") then
 			return import .. ".ts"
 		end
-	elseif opts.components and item.filename:match(patterns.components) then
+	elseif opts.filters.auto_components and item.filename:match(opts.patterns.auto_components) then
 		return import
 	end
 	return nil
 end
 
-local function handle_nuxt_imports(opts, item, import, patterns)
-	if opts.components and item.filename:match(patterns.components) then
-		return import:gsub(patterns.import_prefix, "")
-	end
-	return nil
+local function handle_nuxt_imports(item, import, opts)
+	return opts.filters.auto_components
+			and item.filename:match(opts.filters.auto_components)
+			and import:gsub(opts.import_prefix, "")
+		or nil
 end
 
 local function get_framework_import_func(framework)
@@ -28,12 +26,12 @@ local function get_framework_import_func(framework)
 		end
 end
 
-function M.get_path(items, patterns, framework)
-	local opts = config.get_opts()
+function M.get_path(items, opts)
 	for _, item in ipairs(items) do
-		local import = string.match(item.text, patterns.import)
-		if import and string.match(import, patterns.import_prefix) then
-			local import_path = get_framework_import_func(framework)(opts, item, import, patterns)
+		local import = string.match(item.text, opts.patterns.import)
+		local prefix = import and string.match(import, opts.patterns.import_prefix)
+		if import and prefix then
+			local import_path = get_framework_import_func(opts.framework)(item, import, opts)
 			if import_path then
 				return import_path
 			end
