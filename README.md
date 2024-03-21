@@ -1,6 +1,7 @@
 # vue-goto-definition
 
 <!--toc:start-->
+
 - [vue-goto-definition](#vue-goto-definition)
   - [About](#about)
   - [Neovim Config](#neovim-config)
@@ -14,7 +15,7 @@
   - [LSP](#lsp)
     - [Takeover mode](#takeover-mode)
   - [Extra](#extra)
-<!--toc:end-->
+  <!--toc:end-->
 
 Improves `Volar` language server goto definition functionality
 
@@ -29,8 +30,8 @@ For example:
 This is annoying because now you have to open another file to go to the definition,
 polluting the jump list.
 
-`vue-goto-definition` overrides `vim.lsp.buf.definition` to edit the autoimported
-symbol so you don't have to make multiple jumps to goto the definition.
+`vue-goto-definition` overrides `vim.lsp.buf.definition` to filter the locationlist
+so you don't have to make multiple jumps to goto the definition.
 
 ## Neovim Config
 
