@@ -1,7 +1,7 @@
-# vue-goto-component
+# vue-goto-definition
 
 <!--toc:start-->
-- [vue-goto-component](#vue-goto-component)
+- [vue-goto-definition](#vue-goto-definition)
   - [About](#about)
   - [Neovim Config](#neovim-config)
     - [Default configuration](#default-configuration)
@@ -13,9 +13,10 @@
     - [Nuxt](#nuxt)
   - [LSP](#lsp)
     - [Takeover mode](#takeover-mode)
+  - [Extra](#extra)
 <!--toc:end-->
 
-Improves `@vue/typescript-plugin` goto definition functionality
+Improves `Volar` language server goto definition functionality
 
 ## About
 
@@ -181,3 +182,9 @@ local server_enabled = function(server)
 end
 
 ```
+
+## Extra
+
+[My neovim config](https://github.com/catgoose/nvim)
+[telescope-helpgrep.nvim](https://github.com/catgoose/telescope-helpgrep.nvim)
+[do-the-needful.nvim](https://github.com/catgoose/do-the-needful.nvim)
