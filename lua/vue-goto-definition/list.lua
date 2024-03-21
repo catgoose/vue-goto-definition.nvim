@@ -4,6 +4,7 @@ local locationlist = require("vue-goto-definition.locationlist")
 local M = {}
 
 function M.process(list, opts)
+	--  TODO: 2024-03-21 - add opts for hybridMode for vue lsp
 	local is_volar = vim.lsp.get_clients({ name = "volar" })[1] ~= nil
 	if not list or not list.items or #list.items == 0 or not is_volar then
 		return
