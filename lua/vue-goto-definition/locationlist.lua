@@ -21,7 +21,7 @@ function M.open(items, opts)
 	if #filtered > 0 then
 		if #filtered == 1 then
 			vim.cmd.edit(filtered[1].filename)
-			vim.api.nvim_win_set_cursor(0, { filtered[1].lnum, items[1].col })
+			vim.api.nvim_win_set_cursor(0, { filtered[1].lnum, items[1].col - 1 })
 		else
 			vim.fn.setloclist(0, filtered)
 			vim.cmd.lopen()
