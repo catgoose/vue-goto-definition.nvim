@@ -21,6 +21,9 @@ local _opts = {
 		end,
 		priority = { "nuxt", "vue3" },
 	},
+	lsp = {
+		override_definition = true,
+	},
 }
 
 local framework = _opts.detection.priority[1]
@@ -65,6 +68,7 @@ function M.get_opts()
 		patterns = patterns[framework],
 		filters = _opts.filters,
 		filetypes = _opts.filetypes,
+		lsp = _opts.lsp,
 	}
 end
 
