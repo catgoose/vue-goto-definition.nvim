@@ -1,3 +1,6 @@
+---@class Import
+---@field get_path fun(items: table, opts: table):string|nil
+---@return Import
 local M = {}
 
 local function handle_vue3_imports(item, import, opts)

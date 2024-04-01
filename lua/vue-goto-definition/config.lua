@@ -1,3 +1,7 @@
+---@class Config
+---@field set_opts fun(opts: table):table
+---@field get_opts fun():table
+---@return Config
 local M = {}
 
 local _opts = {

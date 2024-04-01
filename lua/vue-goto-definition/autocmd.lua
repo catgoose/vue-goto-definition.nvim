@@ -1,6 +1,9 @@
 local config = require("vue-goto-definition.config")
 local list = require("vue-goto-definition.list")
 
+---@class Autocmd
+---@field override_definition fun():nil
+---@return Autocmd
 local M = {}
 
 local lsp_definition = vim.lsp.buf.definition

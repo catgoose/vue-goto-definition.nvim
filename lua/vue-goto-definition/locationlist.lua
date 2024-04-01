@@ -1,3 +1,6 @@
+---@class LocationList
+---@field open fun(items: table, opts: table):nil
+---@return LocationList
 local M = {}
 
 local function get_filtered_items(items, opts)

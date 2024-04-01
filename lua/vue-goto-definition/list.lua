@@ -1,6 +1,9 @@
 local import = require("vue-goto-definition.import")
 local locationlist = require("vue-goto-definition.locationlist")
 
+---@class List
+---@field process fun(list: table, opts: table):nil
+---@return List
 local M = {}
 
 function M.process(list, opts)
