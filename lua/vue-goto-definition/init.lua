@@ -1,6 +1,4 @@
 local config = require("vue-goto-definition.config")
-local autocmd = require("vue-goto-definition.autocmd")
-local lsp = require("vue-goto-definition.lsp")
 
 ---@class VueGotoDefinition
 ---@field setup fun(opts: table):nil
@@ -10,14 +8,15 @@ local M = {}
 
 function M.setup(opts)
 	opts = opts or {}
-	opts = config.set_opts(opts)
+	config.set_opts(opts)
+	M.Log = require("vue-goto-definition.logger").init()
 	if opts.lsp.override_definition then
-		autocmd.override_definition()
+    require("vue-goto-definition.autocmd").override_definition()
 	end
 end
 
 function M.goto_definition()
-	local goto = lsp.get_goto()
+ 	local goto = require("vue-goto-definition.lsp").get_goto()
 	 goto()
 end
 

@@ -4,6 +4,8 @@
 ---@return Config
 local M = {}
 
+local default_log_level = "warn"
+
 local _opts = {
 	filters = {
 		auto_imports = true,
@@ -24,6 +26,8 @@ local _opts = {
 	lsp = {
 		override_definition = true,
 	},
+	log_level = default_log_level,
+	log_levels = { "trace", "debug", "info", "warn", "error", "fatal" },
 }
 
 local framework = _opts.detection.priority[1]
@@ -59,6 +63,9 @@ function M.set_opts(opts)
 			break
 		end
 	end
+	if not vim.tbl_contains(_opts.log_levels, _opts.log_level) then
+		_opts.log_level = default_log_level
+	end
 	return M.get_opts()
 end
 
@@ -69,6 +76,7 @@ function M.get_opts()
 		filters = _opts.filters,
 		filetypes = _opts.filetypes,
 		lsp = _opts.lsp,
+		log_level = _opts.log_level,
 	}
 end
 
