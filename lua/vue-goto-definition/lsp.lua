@@ -1,7 +1,4 @@
-local list = require("vue-goto-definition.list")
-local config = require("vue-goto-definition.config")
-local Log = require("vue-goto-definition").Log
-local sf = require("vue-goto-definition.utils").string_format
+local items = require("vue-goto-definition.items")
 
 ---@class Lsp
 ---@field get_goto fun():function
@@ -15,11 +12,12 @@ local function get_definition()
 end
 
 function M.get_goto()
-	local opts = config.get_opts()
 	local on_list = {
 		on_list = function(_list)
-			-- list.process(_list, opts)
-      Log.trace(sf("Processing list items: %s", #_list.items))
+      vim.print(_list.items)
+      if _list and _list.items and #_list.items > 0 then
+        items.add(_list.items)
+      end
 		end,
 	}
 	local goto = function(_opts)

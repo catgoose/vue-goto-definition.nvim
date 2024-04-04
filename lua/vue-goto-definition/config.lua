@@ -28,6 +28,7 @@ local _opts = {
 	},
 	log_level = default_log_level,
 	log_levels = { "trace", "debug", "info", "warn", "error", "fatal" },
+	listen = 200,
 }
 
 local framework = _opts.detection.priority[1]
@@ -77,6 +78,7 @@ function M.get_opts()
 		filetypes = _opts.filetypes,
 		lsp = _opts.lsp,
 		log_level = _opts.log_level,
+		listen = _opts.listen,
 	}
 end
 
