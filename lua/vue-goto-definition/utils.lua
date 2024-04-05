@@ -13,7 +13,7 @@ function M.string_format(msg, ...)
 	return string.format(msg, unpack(args))
 end
 
-function M.find_index(list, item)
+function M.tbl_get_index(list, item)
 	for index, value in ipairs(list) do
 		if value == item then
 			return index

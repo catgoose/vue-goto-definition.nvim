@@ -41,7 +41,7 @@ function M.add(items)
 	))
 	vim.defer_fn(function()
 		process_items()
-	end, config.get_opts().listen)
+	end, config.get_opts().debounce)
 end
 
 function M.set_callback(func)

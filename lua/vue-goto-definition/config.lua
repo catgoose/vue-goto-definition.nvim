@@ -31,7 +31,7 @@ local _opts = {
 	},
 	log_level = default_log_level,
 	log_levels = { "trace", "debug", "info", "warn", "error", "fatal" },
-	listen = 200,
+	debounce = 200,
 }
 
 local framework = _opts.detection.priority[1]
@@ -82,15 +82,15 @@ function M.get_opts()
 		lsp = _opts.lsp,
 		log_level = _opts.log_level,
 		log_levels = _opts.log_levels,
-		listen = _opts.listen,
+		debounce = _opts.debounce,
 	}
 end
 
 function M.at_least_log_level(find_level)
 	local opts = M.get_opts()
 	local log_levels = opts.log_levels
-	local cur_i = utils.find_index(log_levels, opts.log_level)
-	local find_i = utils.find_index(log_levels, find_level)
+	local cur_i = utils.tbl_get_index(log_levels, opts.log_level)
+	local find_i = utils.tbl_get_index(log_levels, find_level)
 	return find_i <= cur_i
 end
 
