@@ -15,6 +15,7 @@ local _opts = {
 		auto_components = true,
 		same_file = true,
 		declaration = true,
+		duplicate_filename = true,
 	},
 	filetypes = { "vue", "typescript" },
 	detection = {

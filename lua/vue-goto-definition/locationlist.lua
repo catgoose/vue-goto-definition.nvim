@@ -44,8 +44,7 @@ end
 
 local function remove_declarations(items, opts)
 	local filtered = vim.tbl_filter(function(item)
-		local is_declaration = opts.filters.declaration and item.filename:match(opts.patterns.declaration)
-		return not is_declaration
+		return not item.filename:match(opts.patterns.declaration)
 	end, items)
 	if #filtered == 0 then
 		Log.debug([[locationlist.remove_declarations: filtered list is empty: returning original items]])
@@ -58,12 +57,16 @@ local function remove_declarations(items, opts)
 end
 
 local function get_filtered_items(items, opts)
-	items = dedupe_filenames(items)
+	if opts.filters.duplicate_filename then
+		items = dedupe_filenames(items)
+	end
 	items = apply_filters(items, opts)
 	if #items < 2 then
 		return items
 	end
-	items = remove_declarations(items, opts)
+	if opts.filters.declaration then
+		items = remove_declarations(items, opts)
+	end
 	return items
 end
 

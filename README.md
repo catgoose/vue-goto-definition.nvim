@@ -12,7 +12,7 @@
   - [Framework and LSP configuration](#framework-and-lsp-configuration)
     - [Vue 3](#vue-3)
     - [Nuxt](#nuxt)
-  - [LSP configuration](#lsp-configuration)
+    - [lspconfig](#lspconfig)
   - [Extra](#extra)
   <!--toc:end-->
 
@@ -44,6 +44,7 @@ so you don't have to make multiple jumps to goto the definition.
     same_file = true, -- filter location list entries referencing the current file
     declaration = true, -- filter declaration files unless the only location list
     -- item is a declaration file
+    duplicate_filename = true, -- dedupe duplicate filenames
   },
   filetypes = { "vue", "typescript" }, -- enabled for filetypes
   detection = { -- framework detection.  Detection functions can be overridden here
@@ -130,7 +131,7 @@ to configure your `tsconfig.app.json` like this:
 I don't use nuxt so you are on your own here. Please open an issue if definition
 resolution is not working.
 
-## LSP configuration
+### lspconfig
 
 If you are having trouble getting `Volar` configured correctly check my
 [lspconfig.lua](https://github.com/catgoose/nvim/blob/main/lua/plugins/lspconfig.lua)
