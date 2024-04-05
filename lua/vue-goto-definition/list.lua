@@ -11,7 +11,14 @@ local M = {}
 
 local function log_process(items)
 	if #items > 0 then
-		Log.trace(sf("list.process: Processing list items: %s", #items))
+		Log.trace(sf(
+			[[list.process: Processing list items: %s:
+
+    %s
+    ]],
+			#items,
+			items
+		))
 		if config.at_least_log_level("debug") then
 			local filenames = {}
 			for _, item in ipairs(items) do

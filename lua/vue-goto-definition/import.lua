@@ -43,8 +43,6 @@ function M.get_path(items, opts)
 			item.text,
 			opts.patterns.import
 		))
-		--  TODO: 2024-04-04 - Match against "from%s+(['\"])(.-)%1"
-		-- for something like "import { useCounterStore } from './stores/counter'"
 		local import = string.match(item.text, opts.patterns.import)
 		Log.trace(sf("import.get_path: import: %s", import or "none found"))
 		local prefix = import and string.match(import, opts.patterns.import_prefix)

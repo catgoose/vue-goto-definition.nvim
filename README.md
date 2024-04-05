@@ -4,6 +4,7 @@
 
 - [vue-goto-definition](#vue-goto-definition)
   - [About](#about)
+  - [API](#api)
   - [Neovim Config](#neovim-config)
     - [Default configuration](#default-configuration)
       - [Filter](#filter)
@@ -24,13 +25,27 @@ When using vue with autoimports ([unplugin-vue-components](https://github.com/un
 
 For example:
 
-![default goto definition](https://github.com/catgoose/vue-goto-definition.nvim/blob/screenshots/2024-03-20_07-55.png)
+| ![default goto definition](https://github.com/catgoose/vue-goto-definition.nvim/blob/screenshots/2024-03-20_07-55.png) |
+| :--------------------------------------------------------------------------------------------------------------------: |
+|                                  _Default goto definition with unplugin auto-imports_                                  |
 
-This is annoying because now you have to open another file to go to the definition,
-polluting the jump list.
+| ![goto definition for function in same .vue file](https://github.com/catgoose/vue-goto-definition.nvim/blob/screenshots/loclist_samefile.png) |
+| :-------------------------------------------------------------------------------------------------------------------------------------------: |
+|                                    _Using the default goto definition for a symbol in the same .vue file_                                     |
 
-`vue-goto-definition` overrides `vim.lsp.buf.definition` to filter the locationlist
-so you don't have to make multiple jumps to goto the definition.
+`vue-goto-definition` overrides `vim.lsp.buf.definition` to attempt to filter the
+location list and decide the best source for a symbol's definition.
+
+## API
+
+Calling `goto_definition` directly can be useful if you have set `opts.lsp.override`
+to false, disabling autocommand creation to override the default lsp definition.
+
+```lua
+require("vue-goto-definition").goto_definition(opts)
+```
+
+`opts` is optional and will be passed into `vim.lsp.buf.definition`
 
 ## Neovim Config
 
@@ -55,6 +70,9 @@ so you don't have to make multiple jumps to goto the definition.
       return vim.fn.filereadable("vite.config.ts") == 1 or vim.fn.filereadable("src/App.vue") == 1
     end,
     priority = { "nuxt", "vue3" }, -- order in which to detect framework
+  },
+  lsp = {
+    override_definition = true, -- override vim.lsp.buf.definition
   },
   debounce = 200
 }
@@ -138,6 +156,6 @@ If you are having trouble getting `Volar` configured correctly check my
 
 ## Extra
 
-[My neovim config](https://github.com/catgoose/nvim)
-[telescope-helpgrep.nvim](https://github.com/catgoose/telescope-helpgrep.nvim)
-[do-the-needful.nvim](https://github.com/catgoose/do-the-needful.nvim)
+- [My neovim config](https://github.com/catgoose/nvim)
+- [telescope-helpgrep.nvim](https://github.com/catgoose/telescope-helpgrep.nvim)
+- [do-the-needful.nvim](https://github.com/catgoose/do-the-needful.nvim)
