@@ -55,7 +55,8 @@ so you don't have to make multiple jumps to goto the definition.
       return vim.fn.filereadable("vite.config.ts") == 1 or vim.fn.filereadable("src/App.vue") == 1
     end,
     priority = { "nuxt", "vue3" }, -- order in which to detect framework
-  }
+  },
+  debounce = 200
 }
 ```
 
