@@ -1,5 +1,6 @@
 local config = require("vue-goto-definition.config")
 local sf = require("vue-goto-definition.utils").string_format
+local utils = require("vue-goto-definition.utils")
 
 ---@class Logger
 ---@field log table
@@ -21,6 +22,14 @@ function M.init()
 		end,
 	})
 	return M.log
+end
+
+function M.at_least_level(find_level)
+	local opts = config.get_opts()
+	local log_levels = opts.log_levels
+	local cur_i = utils.find_index(log_levels, opts.log_level)
+	local find_i = utils.find_index(log_levels, find_level)
+	return find_i <= cur_i
 end
 
 return M

@@ -15,9 +15,9 @@ function M.setup(opts)
 	end
 end
 
-function M.goto_definition()
- 	local goto = require("vue-goto-definition.lsp").get_goto()
-	 goto()
+function M.goto_definition(opts)
+ 	local goto = require("vue-goto-definition.lsp").get_goto(opts)
+	goto()
 end
 
 return M

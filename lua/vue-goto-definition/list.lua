@@ -1,5 +1,6 @@
 local import = require("vue-goto-definition.import")
 local locationlist = require("vue-goto-definition.locationlist")
+local config = require("vue-goto-definition.config")
 local Log = require("vue-goto-definition").Log
 local sf = require("vue-goto-definition.utils").string_format
 
@@ -8,13 +9,28 @@ local sf = require("vue-goto-definition.utils").string_format
 ---@return List
 local M = {}
 
-function M.process(items, opts)
-	--  TODO: 2024-03-21 - add opts for hybridMode for vue lsp
-	local is_volar = vim.lsp.get_clients({ name = "volar" })[1] ~= nil
-	if not is_volar then
-		Log.warn("list.process: Volar LSP not found.")
+local function log_process(items)
+	if #items > 0 then
+		Log.trace(sf("list.process: Processing list items: %s", #items))
+		if config.at_least_log_level("debug") then
+			local filenames = {}
+			for _, item in ipairs(items) do
+				if item.filename then
+					table.insert(filenames, item.filename)
+				end
+			end
+			if #filenames > 0 then
+				Log.debug(sf("list.process: Found %s files to process", #filenames))
+				for _, filename in ipairs(filenames) do
+					Log.debug(sf("list.process: %s", filename))
+				end
+			end
+		end
 	end
-	Log.trace(sf("list.process: Processing list items: %s", #items))
+end
+
+function M.process(items, opts)
+	log_process(items)
 	local path = import.get_path(items, opts)
 	if path then
 		Log.trace(sf("list.process: Found path: %s", path))

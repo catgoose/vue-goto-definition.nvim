@@ -1,6 +1,9 @@
+local utils = require("vue-goto-definition.utils")
+
 ---@class Config
 ---@field set_opts fun(opts: table):table
 ---@field get_opts fun():table
+---@field at_least_log_level fun(find_level: string):boolean
 ---@return Config
 local M = {}
 
@@ -78,8 +81,17 @@ function M.get_opts()
 		filetypes = _opts.filetypes,
 		lsp = _opts.lsp,
 		log_level = _opts.log_level,
+		log_levels = _opts.log_levels,
 		listen = _opts.listen,
 	}
+end
+
+function M.at_least_log_level(find_level)
+	local opts = M.get_opts()
+	local log_levels = opts.log_levels
+	local cur_i = utils.find_index(log_levels, opts.log_level)
+	local find_i = utils.find_index(log_levels, find_level)
+	return find_i <= cur_i
 end
 
 return M
