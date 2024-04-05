@@ -12,8 +12,7 @@
   - [Framework and LSP configuration](#framework-and-lsp-configuration)
     - [Vue 3](#vue-3)
     - [Nuxt](#nuxt)
-  - [LSP](#lsp)
-    - [Takeover mode](#takeover-mode)
+  - [LSP configuration](#lsp-configuration)
   - [Extra](#extra)
   <!--toc:end-->
 
@@ -55,7 +54,8 @@ so you don't have to make multiple jumps to goto the definition.
       return vim.fn.filereadable("vite.config.ts") == 1 or vim.fn.filereadable("src/App.vue") == 1
     end,
     priority = { "nuxt", "vue3" }, -- order in which to detect framework
-  }
+  },
+  debounce = 200
 }
 ```
 
@@ -130,59 +130,10 @@ to configure your `tsconfig.app.json` like this:
 I don't use nuxt so you are on your own here. Please open an issue if definition
 resolution is not working.
 
-## LSP
+## LSP configuration
 
-I would recommend using `volar` with takeover mode because the new hybrid mode
-results in two calls when `vim.lsp.buf.definition` is executed.
-
-I've opened an issue about this [here](https://github.com/vuejs/language-tools/issues/4112)
-
-### Takeover mode
-
-I use neoconf to enable takeover mode
-
-Create a `.neoconf.json` in project root, something like:
-
-```json
-{
-  "lsp": {
-    "servers": {
-      "volar": {
-        "disable": false
-      },
-      "tsserver": {
-        "disable": true
-      },
-      "angularls": {
-        "disable": true
-      }
-    }
-  }
-}
-```
-
-Create a `neoconf.json` in nvim config directory:
-
-```json
-{
-  "lsp": {
-    "servers": {
-      "volar": {
-        "disable": true
-      }
-    }
-  }
-}
-```
-
-Use a function like this in your lspconfig to disable lsp servers per project
-
-```lua
-local server_enabled = function(server)
-  return not require("neoconf").get("lsp.servers." .. server .. ".disable")
-end
-
-```
+If you are having trouble getting `Volar` configured correctly check my
+[lspconfig.lua](https://github.com/catgoose/nvim/blob/main/lua/plugins/lspconfig.lua)
 
 ## Extra
 

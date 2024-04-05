@@ -1,4 +1,13 @@
+local utils = require("vue-goto-definition.utils")
+
+---@class Config
+---@field set_opts fun(opts: table):table
+---@field get_opts fun():table
+---@field at_least_log_level fun(find_level: string):boolean
+---@return Config
 local M = {}
+
+local default_log_level = "warn"
 
 local _opts = {
 	filters = {
@@ -17,6 +26,12 @@ local _opts = {
 		end,
 		priority = { "nuxt", "vue3" },
 	},
+	lsp = {
+		override_definition = true,
+	},
+	log_level = default_log_level,
+	log_levels = { "trace", "debug", "info", "warn", "error", "fatal" },
+	debounce = 200,
 }
 
 local framework = _opts.detection.priority[1]
@@ -52,6 +67,9 @@ function M.set_opts(opts)
 			break
 		end
 	end
+	if not vim.tbl_contains(_opts.log_levels, _opts.log_level) then
+		_opts.log_level = default_log_level
+	end
 	return M.get_opts()
 end
 
@@ -61,7 +79,19 @@ function M.get_opts()
 		patterns = patterns[framework],
 		filters = _opts.filters,
 		filetypes = _opts.filetypes,
+		lsp = _opts.lsp,
+		log_level = _opts.log_level,
+		log_levels = _opts.log_levels,
+		debounce = _opts.debounce,
 	}
+end
+
+function M.at_least_log_level(find_level)
+	local opts = M.get_opts()
+	local log_levels = opts.log_levels
+	local cur_i = utils.tbl_get_index(log_levels, opts.log_level)
+	local find_i = utils.tbl_get_index(log_levels, find_level)
+	return find_i <= cur_i
 end
 
 return M

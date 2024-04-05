@@ -1,3 +1,9 @@
+local Log = require("vue-goto-definition").Log
+local sf = require("vue-goto-definition.utils").string_format
+
+---@class Import
+---@field get_path fun(items: table, opts: table):string|nil
+---@return Import
 local M = {}
 
 local function handle_vue3_imports(item, import, opts)
@@ -28,7 +34,19 @@ end
 
 function M.get_path(items, opts)
 	for _, item in ipairs(items) do
+		Log.trace(sf(
+			[[import.get_path:
+
+    import path: %s
+    pattern: %s
+    ]],
+			item.text,
+			opts.patterns.import
+		))
+		--  TODO: 2024-04-04 - Match against "from%s+(['\"])(.-)%1"
+		-- for something like "import { useCounterStore } from './stores/counter'"
 		local import = string.match(item.text, opts.patterns.import)
+		Log.trace(sf("import.get_path: import: %s", import or "none found"))
 		local prefix = import and string.match(import, opts.patterns.import_prefix)
 		if import and prefix then
 			local import_path = get_framework_import_func(opts.framework)(item, import, opts)
