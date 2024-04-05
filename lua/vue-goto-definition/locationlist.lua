@@ -8,14 +8,21 @@ local M = {}
 
 local function dedupe_filenames(items)
 	local seen = {}
-	local result = {}
+	local filtered = {}
 	for _, item in ipairs(items) do
 		if not seen[item.filename] then
-			table.insert(result, item)
+			table.insert(filtered, item)
 			seen[item.filename] = true
 		end
 	end
-	return result
+	if #filtered == 0 then
+		Log.debug([[locationlist.dedupe_filenames: filtered list is empty: returning original items]])
+		return items
+	end
+	if #filtered ~= #items then
+		Log.debug(sf([[locationlist.dedupe_filenames: found %s items after deduping filenames]], #filtered))
+	end
+	return filtered
 end
 
 local function apply_filters(items, opts)
@@ -25,13 +32,13 @@ local function apply_filters(items, opts)
 		local is_same_file = opts.filters.same_file and item.filename == vim.fn.expand("%:p")
 		return not is_auto_import and not is_component and not is_same_file
 	end, items or {})
-	Log.trace(sf(
-		[[locationlist.get_filtered_items: found %s items after filter:
-
-  %s]],
-		#filtered,
-		filtered
-	))
+	if #filtered == 0 then
+		Log.debug([[locationlist.apply_filters: filtered list is empty: returning original items]])
+		return items
+	end
+	if #filtered ~= #items then
+		Log.debug(sf([[locationlist.apply_filters: found %s items after applying filters]], #filtered))
+	end
 	return filtered
 end
 
@@ -40,6 +47,13 @@ local function remove_declarations(items, opts)
 		local is_declaration = opts.filters.declaration and item.filename:match(opts.patterns.declaration)
 		return not is_declaration
 	end, items)
+	if #filtered == 0 then
+		Log.debug([[locationlist.remove_declarations: filtered list is empty: returning original items]])
+		return items
+	end
+	if #filtered ~= #items then
+		Log.debug(sf([[locationlist.remove_declarations: found %s items after declaration filter]], #filtered))
+	end
 	return filtered
 end
 
