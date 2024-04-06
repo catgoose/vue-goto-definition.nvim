@@ -25,6 +25,13 @@ local function dedupe_filenames(items)
 	return filtered
 end
 
+local function same_filename(items)
+	--  TODO: 2024-04-06 - Remove definitions with filename and lnum as
+	--  current file and line number
+	--  TODO: 2024-04-06 - Dedupe definitions that are duplicate filename and lnum
+	return items
+end
+
 local function apply_filters(items, opts)
 	local filtered = vim.tbl_filter(function(item)
 		local is_auto_import = opts.filters.auto_imports and item.filename:match(opts.patterns.auto_imports)
@@ -57,6 +64,7 @@ local function remove_declarations(items, opts)
 end
 
 function M.items(items, opts)
+	items = same_filename(items)
 	if opts.filters.duplicate_filename then
 		items = dedupe_filenames(items)
 	end
