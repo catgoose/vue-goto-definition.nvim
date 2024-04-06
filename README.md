@@ -19,7 +19,7 @@
 
 Improves `Volar` language server goto definition functionality
 
-## About
+## The Problem
 
 When using vue with autoimports ([unplugin-vue-components](https://github.com/unplugin/unplugin-vue-components) and [unplugin-auto-import](https://github.com/unplugin/unplugin-auto-import) or using [nuxt](https://nuxt.com/)) `vim.lsp.buf.definition` will populate location list with the autoimport definition file and/or the typescript declaration for a symbol.
 
@@ -32,6 +32,16 @@ For example:
 | ![goto definition for function in same .vue file](https://github.com/catgoose/vue-goto-definition.nvim/blob/screenshots/loclist_samefile.png) |
 | :-------------------------------------------------------------------------------------------------------------------------------------------: |
 |                                    _Using the default goto definition for a symbol in the same .vue file_                                     |
+
+Another issue with Volar LSP is that since it uses typescript LSP, when
+`vim.lsp.buf.definition` is called it requests definitions from both volar and
+tsserver. Since the two LSP can return different results, the consequences can
+be unpredictable.
+
+## The Solution
+
+`vue-got-definition` waits a debounce period (configurable in opts) before
+processing definitions. This allows Volar and tsserver time to return definitions.
 
 `vue-goto-definition` overrides `vim.lsp.buf.definition` to attempt to filter the
 location list and decide the best source for a symbol's definition.
@@ -96,6 +106,7 @@ local opts = {
     auto_components = true,
     same_file = true,
     declaration = true,
+    duplicate_filename = true,
   },
   filetypes = { "vue", "typescript" },
   detection = {
@@ -106,7 +117,11 @@ local opts = {
       return vim.fn.filereadable("vite.config.ts") == 1 or vim.fn.filereadable("src/App.vue") == 1
     end,
     priority = { "nuxt", "vue3" },
-  }
+  },
+  lsp = {
+    override_definition = true, -- override vim.lsp.buf.definition
+  },
+  debounce = 200
 }
 
 return {
