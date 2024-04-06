@@ -11,8 +11,8 @@ local M = {}
 
 local function log_process(items)
 	if #items > 0 then
-		Log.trace(sf(
-			[[list.process: Processing list items: %s:
+		Log.debug(sf(
+			[[list.process: Processing %s list items:
 
     %s
     ]],

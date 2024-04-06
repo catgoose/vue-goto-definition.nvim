@@ -16,11 +16,11 @@ local function dedupe_filenames(items)
 		end
 	end
 	if #filtered == 0 then
-		Log.debug([[locationlist.dedupe_filenames: filtered list is empty: returning original items]])
+		Log.debug([[filter._dedupe_filenames: filtered list is empty: returning original items]])
 		return items
 	end
 	if #filtered ~= #items then
-		Log.debug(sf([[locationlist.dedupe_filenames: found %s items after deduping filenames]], #filtered))
+		Log.debug(sf([[filter._dedupe_filenames: found %s items after deduping filenames]], #filtered))
 	end
 	return filtered
 end
@@ -33,11 +33,11 @@ local function apply_filters(items, opts)
 		return not is_auto_import and not is_component and not is_same_file
 	end, items or {})
 	if #filtered == 0 then
-		Log.debug([[locationlist.apply_filters: filtered list is empty: returning original items]])
+		Log.debug([[filter._apply_filters: filtered list is empty: returning original items]])
 		return items
 	end
 	if #filtered ~= #items then
-		Log.debug(sf([[locationlist.apply_filters: found %s items after applying filters]], #filtered))
+		Log.debug(sf([[filter._apply_filters: found %s items after applying filters]], #filtered))
 	end
 	return filtered
 end
@@ -47,11 +47,11 @@ local function remove_declarations(items, opts)
 		return not item.filename:match(opts.patterns.declaration)
 	end, items)
 	if #filtered == 0 then
-		Log.debug([[locationlist.remove_declarations: filtered list is empty: returning original items]])
+		Log.debug([[filter._remove_declarations: filtered list is empty: returning original items]])
 		return items
 	end
 	if #filtered ~= #items then
-		Log.debug(sf([[locationlist.remove_declarations: found %s items after declaration filter]], #filtered))
+		Log.debug(sf([[filter._remove_declarations: found %s items after declaration filter]], #filtered))
 	end
 	return filtered
 end
@@ -60,6 +60,14 @@ function M.items(items, opts)
 	if opts.filters.duplicate_filename then
 		items = dedupe_filenames(items)
 	end
+	Log.debug(sf(
+		[[filter.items: filtering %s items:
+
+  %s
+  ]],
+		#items,
+		items
+	))
 	items = apply_filters(items, opts)
 	if #items < 2 then
 		return items
@@ -67,6 +75,14 @@ function M.items(items, opts)
 	if opts.filters.declaration then
 		items = remove_declarations(items, opts)
 	end
+	Log.debug(sf(
+		[[filter.items: returning %s filtered items:
+
+  %s
+  ]],
+		#items,
+		items
+	))
 	return items
 end
 
