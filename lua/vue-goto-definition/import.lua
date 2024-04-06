@@ -2,7 +2,7 @@ local Log = require("vue-goto-definition").Log
 local sf = require("vue-goto-definition.utils").string_format
 
 ---@class Import
----@field get_path fun(items: table, opts: table):string|nil
+---@field get_path fun(items: DefinitionItems, opts: table):string|nil
 ---@return Import
 local M = {}
 

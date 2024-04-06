@@ -5,7 +5,7 @@ local Log = require("vue-goto-definition").Log
 local sf = require("vue-goto-definition.utils").string_format
 
 ---@class List
----@field process fun(list: table, opts: table):nil
+---@field process fun(items: DefinitionItems, opts: table):nil
 ---@return List
 local M = {}
 

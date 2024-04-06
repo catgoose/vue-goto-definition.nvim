@@ -11,13 +11,12 @@ function M.setup(opts)
 	config.set_opts(opts)
 	M.Log = require("vue-goto-definition.logger").init()
 	if opts.lsp.override_definition then
-    require("vue-goto-definition.autocmd").override_definition()
+		require("vue-goto-definition.autocmd").override_definition()
 	end
 end
 
 function M.goto_definition(opts)
- 	local goto = require("vue-goto-definition.lsp").get_goto(opts)
-	goto()
+	require("vue-goto-definition.lsp").get_goto(opts)()
 end
 
 return M
