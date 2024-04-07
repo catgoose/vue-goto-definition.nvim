@@ -6,6 +6,23 @@ local sf = require("vue-goto-definition.utils").string_format
 ---@return Filter
 local M = {}
 
+local function log_status(method_name, items)
+	local prefix = "filter._" .. method_name
+	if #items == 0 then
+		Log.debug(sf([[%s: filtered list is empty: returning original items]], prefix))
+	else
+		Log.debug(sf(
+			[[%s: found %s items: 
+
+%s
+]],
+			prefix,
+			#items,
+			items
+		))
+	end
+end
+
 local function dedupe_filenames(items)
 	local seen = {}
 	local filtered = {}
@@ -15,59 +32,53 @@ local function dedupe_filenames(items)
 			seen[item.filename] = true
 		end
 	end
-	if #filtered == 0 then
-		Log.debug([[filter._dedupe_filenames: filtered list is empty: returning original items]])
-		return items
-	end
-	if #filtered ~= #items then
-		Log.debug(sf([[filter._dedupe_filenames: found %s items after deduping filenames]], #filtered))
-	end
-	return filtered
+	log_status("dedupe_filenames", items)
+	return #filtered == 0 and items or filtered
 end
 
-local function same_filename(items)
-	--  TODO: 2024-04-06 - Remove definitions with filename and lnum as
-	--  current file and line number
-	--  TODO: 2024-04-06 - Dedupe definitions that are duplicate filename and lnum
-	return items
+local function same_filename_lnum(items)
+	local lnum = vim.api.nvim_win_get_cursor(0)[1]
+	local filtered = vim.tbl_filter(function(item)
+		return item.filename ~= vim.fn.expand("%:p") or item.lnum ~= lnum
+	end, items)
+	log_status("same_filename_lnum", items)
+	return #filtered == 0 and items or filtered
 end
 
-local function apply_filters(items, opts)
+local function dedupe_filename_lnum(items)
+	local seen = {}
+	local filtered = {}
+	for _, item in ipairs(items) do
+		local key = item.filename .. ":" .. item.lnum
+		if not seen[key] then
+			table.insert(filtered, item)
+			seen[key] = true
+		end
+	end
+	log_status("dedupe_filename_lnum", items)
+	return #filtered == 0 and items or filtered
+end
+
+local function import_filters(items, opts)
 	local filtered = vim.tbl_filter(function(item)
 		local is_auto_import = opts.filters.auto_imports and item.filename:match(opts.patterns.auto_imports)
 		local is_component = opts.filters.auto_components and item.filename:match(opts.patterns.auto_components)
-		local is_same_file = opts.filters.same_file and item.filename == vim.fn.expand("%:p")
+		local is_same_file = opts.filters.import_same_file and item.filename == vim.fn.expand("%:p")
 		return not is_auto_import and not is_component and not is_same_file
 	end, items or {})
-	if #filtered == 0 then
-		Log.debug([[filter._apply_filters: filtered list is empty: returning original items]])
-		return items
-	end
-	if #filtered ~= #items then
-		Log.debug(sf([[filter._apply_filters: found %s items after applying filters]], #filtered))
-	end
-	return filtered
+	log_status("import_filters", items)
+	return #filtered == 0 and items or filtered
 end
 
 local function remove_declarations(items, opts)
 	local filtered = vim.tbl_filter(function(item)
 		return not item.filename:match(opts.patterns.declaration)
 	end, items)
-	if #filtered == 0 then
-		Log.debug([[filter._remove_declarations: filtered list is empty: returning original items]])
-		return items
-	end
-	if #filtered ~= #items then
-		Log.debug(sf([[filter._remove_declarations: found %s items after declaration filter]], #filtered))
-	end
-	return filtered
+	log_status("remove_declarations", items)
+	return #filtered == 0 and items or filtered
 end
 
 function M.items(items, opts)
-	items = same_filename(items)
-	if opts.filters.duplicate_filename then
-		items = dedupe_filenames(items)
-	end
 	Log.debug(sf(
 		[[filter.items: filtering %s items:
 
@@ -76,7 +87,12 @@ function M.items(items, opts)
 		#items,
 		items
 	))
-	items = apply_filters(items, opts)
+	items = same_filename_lnum(items)
+	items = dedupe_filename_lnum(items)
+	if opts.filters.duplicate_filename then
+		items = dedupe_filenames(items)
+	end
+	items = import_filters(items, opts)
 	if #items < 2 then
 		return items
 	end
