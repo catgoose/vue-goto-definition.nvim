@@ -40,7 +40,7 @@ be unpredictable.
 
 ## The Solution
 
-`vue-got-definition` waits a debounce period (configurable in opts) before
+`vue-goto-definition` waits a debounce period (configurable in opts) before
 processing definitions. This allows Volar and tsserver time to return definitions.
 
 `vue-goto-definition` overrides `vim.lsp.buf.definition` to attempt to filter the
