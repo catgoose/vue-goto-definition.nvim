@@ -5,14 +5,14 @@ local Log = require("vue-goto-definition").Log
 local sf = require("vue-goto-definition.utils").string_format
 
 ---@class List
----@field process fun(list: table, opts: table):nil
+---@field process fun(items: DefinitionItems, opts: table):nil
 ---@return List
 local M = {}
 
 local function log_process(items)
 	if #items > 0 then
-		Log.trace(sf(
-			[[list.process: Processing list items: %s:
+		Log.debug(sf(
+			[[list.process: Processing %s list items:
 
     %s
     ]],

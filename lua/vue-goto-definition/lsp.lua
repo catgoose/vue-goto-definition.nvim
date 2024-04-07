@@ -1,5 +1,14 @@
 local items = require("vue-goto-definition.items")
 
+---@class DefinitionItem
+---@field col number
+---@field filename string
+---@field lnum number
+---@field text string
+---@field userdata table
+
+---@alias DefinitionItems DefinitionItem[]
+
 ---@class Lsp
 ---@field get_goto fun():function
 ---@return Lsp

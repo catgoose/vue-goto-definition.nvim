@@ -3,6 +3,8 @@ local list = require("vue-goto-definition.list")
 local Log = require("vue-goto-definition").Log
 local sf = require("vue-goto-definition.utils").string_format
 
+---@class Items
+---@field add fun(items: DefinitionItems):nil
 local M = {}
 
 local goto_items = {}
@@ -42,10 +44,6 @@ function M.add(items)
 	vim.defer_fn(function()
 		process_items()
 	end, config.get_opts().debounce)
-end
-
-function M.set_callback(func)
-	items_callback = func
 end
 
 return M
