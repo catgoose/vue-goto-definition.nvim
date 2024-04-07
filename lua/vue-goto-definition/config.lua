@@ -35,7 +35,7 @@ local _opts = {
 	debounce = 200,
 }
 
-local framework = _opts.detection.priority[1]
+local framework = nil
 
 local common = {
 	import = [[import%(['|"](.-)['|"]%)]],
