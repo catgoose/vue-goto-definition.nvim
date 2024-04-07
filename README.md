@@ -66,7 +66,8 @@ require("vue-goto-definition").goto_definition(opts)
   filters = {
     auto_imports = true, -- resolve definitions in auto-imports.d.ts
     auto_components = true, -- resolve definitions in components.d.ts
-    same_file = true, -- filter location list entries referencing the current file
+    import_same_file = true, -- filter location list entries referencing an
+    -- import in the current file.  See below for details
     declaration = true, -- filter declaration files unless the only location list
     -- item is a declaration file
     duplicate_filename = true, -- dedupe duplicate filenames
@@ -88,6 +89,17 @@ require("vue-goto-definition").goto_definition(opts)
 }
 ```
 
+`filters.import_same_file` stops the following from occuring:
+
+```typescript
+import { useCounterStore } from "./stores/counter";
+const store = useCounterStore();
+```
+
+Calling `goto_definition` on `useCounterStore()` can target the import line as
+the definition. Setting `filters.import_same_file` will filter those targets
+in the same file.
+
 #### Filter
 
 If after filtering the locationlist items there are multiple items remaining they
@@ -104,7 +116,7 @@ local opts = {
   filters = {
     auto_imports = true,
     auto_components = true,
-    same_file = true,
+    import_same_file = true,
     declaration = true,
     duplicate_filename = true,
   },
