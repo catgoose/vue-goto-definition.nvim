@@ -19,8 +19,8 @@ end
 
 local function handle_nuxt_imports(item, import, opts)
 	return opts.filters.auto_components
-			and item.filename:match(opts.filters.auto_components)
-			and import:gsub(opts.import_prefix, "")
+			and item.filename:match(opts.patterns.auto_components)
+			and import:gsub(opts.patterns.import_prefix, "")
 		or nil
 end
 
