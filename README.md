@@ -160,12 +160,16 @@ to configure your `tsconfig.app.json` like this:
     "auto-imports.d.ts",
     "components.d.ts"
   ],
-  "exclude": ["src/**/__tests__/*"],
+  "exclude": [
+    "src/**/__tests__/*"
+  ],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   }
 }

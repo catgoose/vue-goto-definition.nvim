@@ -9,41 +9,37 @@ local M = {}
 
 local goto_items = {}
 
-local function clear()
-	goto_items = {}
-end
+local function clear() goto_items = {} end
 
 local items_callback = function()
-	local opts = config.get_opts()
-	Log.trace(sf("items._items_callback: called for %s goto_items", #goto_items))
-	list.process(goto_items, opts)
-	clear()
+  local opts = config.get_opts()
+  Log.trace(sf("items._items_callback: called for %s goto_items", #goto_items))
+  list.process(goto_items, opts)
+  clear()
 end
 
 local function process_items()
-	if goto_items[1] then
-		Log.trace(sf("items._process_items: Processing %s goto_items", #goto_items))
-		items_callback()
-	end
+  if goto_items[1] then
+    Log.trace(sf("items._process_items: Processing %s goto_items", #goto_items))
+    items_callback()
+  end
 end
 
 function M.add(items)
-	for _, item in ipairs(items) do
-		table.insert(goto_items, item)
-	end
-	Log.trace(sf(
-		[[items.add: Adding items to goto_items:
+  for _, item in ipairs(items) do
+    table.insert(goto_items, item)
+  end
+  Log.trace(sf(
+    [[items.add: Adding items to goto_items:
 
   items: %s,
 
   goto_items: %s
   ]],
-		#items,
-		#goto_items
-	))
-	vim.defer_fn(function()
-		process_items()
-	end, config.get_opts().debounce)
+    #items,
+    #goto_items
+  ))
+  vim.defer_fn(function() process_items() end, config.get_opts().debounce)
 end
 
 return M

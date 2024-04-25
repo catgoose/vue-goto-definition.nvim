@@ -1,7 +1,7 @@
 local g = vim.g
 
 if g.vue_goto_definition == 1 then
-	return
+  return
 else
-	g.vue_goto_definition = 1
+  g.vue_goto_definition = 1
 end
